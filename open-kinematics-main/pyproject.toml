@@ -1,0 +1,127 @@
+[project]
+name = "kinematics"
+version = "0.3.0"
+description = "Kinematics solver for suspension systems."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.2.0",
+    "pyarrow>=21.0.0",
+    "pydantic>=2.0",
+    "python-dotenv>=1.0.1",
+    "pyyaml>=6.0.2",
+    "scipy>=1.14.1",
+    "typer>=0.19.2",
+]
+
+[project.scripts]
+kinematics = "kinematics.cli:app"
+
+[tool.uv]
+package = true
+
+[project.optional-dependencies]
+viz = ["matplotlib>=3.8"]
+cli = ["typer>=0.12"]
+
+[dependency-groups]
+dev = [
+    "codespell>=2.3.0",
+    "pytest>=8.3.4",
+    "pytest-cov>=7.0.0",
+    "ruff>=0.13.3",
+    "sympy>=1.13",
+    "ty>=0.0.1a21",
+]
+
+# Pytest settings to exclude manual tests by default.
+# --------------------------------------------------------------------------------------
+[tool.pytest.ini_options]
+addopts = "-m 'not manual'"
+markers = ["manual: marks tests as manual (deselected by default)"]
+
+# Ruff linter and formatter settings.
+# --------------------------------------------------------------------------------------
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+extend-exclude = ["src/kinematics/generated"]
+
+[tool.ruff.lint]
+select = [
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
+    "F", # Pyflakes
+    "I", # isort
+    "D", # pydocstyle
+]
+ignore = [
+    "D100", # Missing docstring in public module
+    "D102", # Missing docstring in public method (too noisy for property implementations)
+    "D104", # Missing docstring in public package
+    "D105", # Missing docstring in magic method
+    "D107", # Missing docstring in __init__
+    "D200", # One-line docstring should fit on one line with quotes
+    "D203", # 1 blank line required before class docstring (conflicts with D211)
+    "D205", # Blank line required between summary and description (too noisy for wrapped summaries)
+    "D212", # Multi-line docstring summary should start at the first line (we want D213)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["D103"]  # Test functions don't need docstrings
+"visualize_*.py" = ["D103"] # Script functions don't need docstrings
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+# Test coverage settings.
+# --------------------------------------------------------------------------------------
+[tool.coverage.run]
+source = ["."]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+    "*/venv/*",
+    "*/.venv/*",
+    "*/setup.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
+
+# Codespell settings for spell checking.
+# --------------------------------------------------------------------------------------
+[tool.codespell]
+skip = ".git,*.pyc,*.pyo,__pycache__,*.egg-info,.venv,venv,.mypy_cache,.ruff_cache"
+# Ignore words that are valid in our domain (e.g., technical terms, variable names).
+ignore-words-list = "nd"
+# Use custom dictionary for British -> American English conversions.
+builtin = "clear,rare,informal,usage"
+dictionary = ".codespell-british.txt,-"
+
+# ty type checker settings.
+# --------------------------------------------------------------------------------------
+[tool.ty.src]
+exclude = [
+    "src/kinematics/generated/",
+    "src/kinematics/visualization/",
+    "src/kinematics/core/vector_utils/visualization.py",
+    "visualize_*.py",
+    "tools/",
+    "scripts/",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/kinematics"]
