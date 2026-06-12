@@ -1,0 +1,77 @@
+type: double_wishbone
+name: test
+version: 0.0.1
+units: MILLIMETERS
+hardpoints:
+  lower_wishbone_inboard_front:
+    x: 253.76409155107675
+    y: 395.555513370923
+    z: 192.20050940694895
+  lower_wishbone_inboard_rear:
+    x: -230.80887300683062
+    y: 448.0896827633088
+    z: 185.80870748804028
+  lower_wishbone_outboard:
+    x: 0.0
+    y: 900.0
+    z: 200.0
+  upper_wishbone_inboard_front:
+    x: 248.53814535251422
+    y: 375.52740457343003
+    z: 495.4468632318492
+  upper_wishbone_inboard_rear:
+    x: -269.0569608652668
+    y: 346.9239525280931
+    z: 518.91088375886
+  upper_wishbone_outboard:
+    x: -25.0
+    y: 750.0
+    z: 500.0
+  trackrod_inboard:
+    x: 69.24095907011
+    y: 188.87468297281623
+    z: 268.3252993240673
+  trackrod_outboard:
+    x: 121.09269262227505
+    y: 791.0745655856765
+    z: 281.03198016172814
+  axle_inboard:
+    x: -20.0
+    y: 800.0
+    z: 308.426
+  axle_outboard:
+    x: -20.0
+    y: 950.0
+    z: 313.426
+config:
+  steered: true
+  wheel:
+    offset: 0
+    tire:
+      aspect_ratio: 0.55
+      section_width: 270
+      rim_diameter: 13
+  cg_position:
+    x: 1250
+    y: 0
+    z: 450
+  wheelbase: 2500.0
+  camber_shim:
+    shim_face_point_a:
+      x: -25.0
+      y: 750.0
+      z: 510.0
+    shim_face_point_b:
+      x: -25.0
+      y: 750.0
+      z: 490.0
+    shim_face_normal:
+      x: 0.0
+      y: 1.0
+      z: 0.0
+    design_thickness: 30.0
+    setup_thickness: 30.0
+  upright_mounted_points:
+  - axle_inboard
+  - axle_outboard
+  - trackrod_outboard
