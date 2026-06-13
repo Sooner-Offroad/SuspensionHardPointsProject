@@ -19,5 +19,11 @@ class SuspensionProblem(ElementwiseProblem):
     
     def _evaluate(self, x, out, *args, **kwargs):
 
+        try:
+            #evaluate here
+        except Exception:
+            # punish bad results here
+
+
         
       
