@@ -48,6 +48,9 @@ class SuspensionProblem(ElementwiseProblem):
                 self.suspension.hardpoints[point_id] = Point3(pt_x, pt_y, pt_z)
             #evaluate here
             solution_states, solver_stats = solve_sweep(self.suspension, self.sweep_config)
+
+            
+
         except Exception as e:
             # punish bad results here
             out["F"] = [1e6] * self.n_obj
