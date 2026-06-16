@@ -6,6 +6,7 @@ from kinematics.io.geometry_loader import load_geometry
 from kinematics.io.sweep_loader import parse_sweep_file
 from kinematics.main import solve_sweep
 from kinematics.core.geometry import Point3
+from kinematics.metrics import compute_metrics_for_state
 
 class SuspensionProblem(ElementwiseProblem):
     def __init__(self, geometry_path: str, sweep_path: str):
@@ -18,7 +19,7 @@ class SuspensionProblem(ElementwiseProblem):
         # number of variables being optimized, in x,y,z for each coordinate based hardpoint (since tyre data is fixed that doesnt count)
         n_var = len(self.optimized_points) * 3
         # number of objectives (for example camber change, caster change, etc.)
-        n_obj = 12
+        n_obj = 1
         # number of constraints, these are objectives the solver MUST achieve exactly
         n_con = 0
         flat_initial_coords = []
@@ -48,7 +49,22 @@ class SuspensionProblem(ElementwiseProblem):
                 self.suspension.hardpoints[point_id] = Point3(pt_x, pt_y, pt_z)
             #evaluate here
             solution_states, solver_stats = solve_sweep(self.suspension, self.sweep_config)
+            output_points = self.suspension.OUTPUT_POINTS
+            config = self.suspension.config
 
+            all_sweep_metrics = []
+            max_abs_scrub = 0.0
+            for st in solution_states:
+                metrics = {}
+                if config is not None:
+                    # This returns a dictionary of metric names to floats
+                    metrics = compute_metrics_for_state(st, self.suspension, config)
+                    current_scrub = metrics.get("scrub_radius_mm", 0.0)
+                    if abs(current_scrub) > max_abs_scrub:
+                        max_abs_scrub = abs(current_scrub)
+                all_sweep_metrics.append(metrics)
+
+            out["F"] = [max_abs_scrub]
             
 
         except Exception as e:
