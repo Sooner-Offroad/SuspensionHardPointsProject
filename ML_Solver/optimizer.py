@@ -2,13 +2,54 @@ import pymoo
 import numpy as np
 
 from pymoo.algorithms.moo.nsga3 import NSGA3
+from pymoo.algorithms.soo.nonconvex.ga import GA
 from pymoo.optimize import minimize
 from pymoo.problems import get_problem
 from pymoo.util.ref_dirs import get_reference_directions
+from pymoo.termination import get_termination
+from suspension_problem import SuspensionProblem
 
-from kinematics.io.geometry_loader import load_geometry
-from kinematics.io.results_writer import SolutionFrame, create_writer_for_path
-from kinematics.io.sweep_loader import parse_sweep_file
-from kinematics.main import solve_sweep
-from kinematics.metrics import compute_metrics_for_state
+def main():
+    geometry_yaml = r"C:\Users\adwai\Desktop\Skool\Local Git Repos\SuspensionHardPointsProject\open-kinematics-main\tests\data\geometry.yaml"
+    sweep_yaml = r"C:\Users\adwai\Desktop\Skool\Local Git Repos\SuspensionHardPointsProject\open-kinematics-main\tests\data\sweep.yaml"
+
+    problem = SuspensionProblem(
+        geometry_path=geometry_yaml, 
+        sweep_path=sweep_yaml
+    )
+    
+    ref_dirs = get_reference_directions("das-dennis", 3, n_partitions=12)
+    
+    # create the algorithm object
+    algorithm = GA(pop_size=92,
+                    ref_dirs=ref_dirs)
+    
+    # create the reference directions to be used for the optimization (NSGA only)
+    termination = get_termination("n_gen", 100)
+
+    print("Starting optimization loop...")
+    res = minimize(
+        problem,
+        algorithm,
+        termination,
+        seed=1,          # Setting a seed makes your runs reproducible
+        verbose=True     # This prints generation progress in your terminal
+    )
+
+    # 6. Inspect the results
+    print("\n--- Optimization Complete ---")
+    print(f"Execution time: {res.exec_time:.2f} seconds")
+
+    if problem.n_obj == 1:
+        print(f"Best Objective Value Found (Scrub Radius): {res.F[0]:.4f} mm")
+        print("Optimized Hardpoint Coordinates (Flattened Array):")
+        print(res.X)
+    else:
+        print(f"Found {len(res.F)} optimal design trade-offs on the Pareto front.")
+        # res.X will be a 2D array of shapes (num_designs, num_variables)
+        # res.F will be a 2D array of shapes (num_designs, 12_objectives)
+
+if __name__ == "__main__":
+    main()
+
 
