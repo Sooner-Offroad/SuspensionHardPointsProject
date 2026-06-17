@@ -18,13 +18,14 @@ def main():
         sweep_path=sweep_yaml
     )
     
+    # create the reference directions to be used for the optimization (NSGA only)
     ref_dirs = get_reference_directions("das-dennis", 3, n_partitions=12)
     
     # create the algorithm object
     algorithm = GA(pop_size=92,
                     ref_dirs=ref_dirs)
     
-    # create the reference directions to be used for the optimization (NSGA only)
+    
     termination = get_termination("n_gen", 100)
 
     print("Starting optimization loop...")

@@ -1,6 +1,7 @@
 import numpy as np
 import yaml
 import copy
+import time
 
 from pathlib import Path
 from pymoo.core.problem import ElementwiseProblem
@@ -35,16 +36,18 @@ class SuspensionProblem(ElementwiseProblem):
         initial_hardpoints = np.array(flat_initial_coords)
         
         # 5. Define bounding boxes (permitting +/- 20mm of movement from baseline design)
-        xl = initial_hardpoints - 5.0
-        xu = initial_hardpoints + 5.0
+        xl = initial_hardpoints - 10.0
+        xu = initial_hardpoints + 10.0
         print("Problem Succesfully Initialized!")
         super().__init__(n_var=n_var, n_obj=n_obj, n_constr=n_con, xl=xl, xu=xu)
     
     def _evaluate(self, x, out, *args, **kwargs):
 
         try:
-
+            t_start_copy = time.perf_counter()
             eval_suspension = copy.deepcopy(self.suspension)
+            t_copy = time.perf_counter() - t_start_copy
+
             #update hardpoints
             for i, point_id in enumerate(self.optimized_points):
                 start_idx = i * 3
@@ -53,6 +56,11 @@ class SuspensionProblem(ElementwiseProblem):
                 pt_z = x[start_idx + 2]
 
                 eval_suspension.hardpoints[point_id] = Point3([pt_x, pt_y, pt_z])
+            
+            t_start_solve = time.perf_counter()
+            solution_states, solver_stats = solve_sweep(eval_suspension, self.sweep_config)
+            t_solve = time.perf_counter() - t_start_solve
+            
             #evaluate here
             solution_states, solver_stats = solve_sweep(eval_suspension, self.sweep_config)
 
@@ -71,6 +79,7 @@ class SuspensionProblem(ElementwiseProblem):
             config = eval_suspension.config
             all_sweep_metrics = []
             max_abs_scrub = 0.0
+            t_start_metrics = time.perf_counter()
             for st in solution_states:
                 metrics = {}
                 if config is not None:
@@ -80,8 +89,15 @@ class SuspensionProblem(ElementwiseProblem):
                     if abs(current_scrub) > max_abs_scrub:
                         max_abs_scrub = abs(current_scrub)
                 all_sweep_metrics.append(metrics)
+            t_metrics = time.perf_counter() - t_start_metrics
 
-            print(f"Max Abs Scrub: {max_abs_scrub}")
+            # Print the breakdown
+            num_states = len(solution_states) if solution_states else 1
+            print(f"\n--- Timing Breakdown ---")
+            print(f"Deepcopy Time: {t_copy:.4f}s")
+            print(f"Total Solve Time: {t_solve:.4f}s ({t_solve/num_states:.4f}s per state)")
+            print(f"Metrics Loop Time: {t_metrics:.4f}s")
+
             out["F"] = [max_abs_scrub]
             
 
