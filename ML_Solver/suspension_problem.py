@@ -12,13 +12,14 @@ from kinematics.core.geometry import Point3
 from kinematics.metrics import compute_metrics_for_state
 
 class SuspensionProblem(ElementwiseProblem):
-    def __init__(self, geometry_path: str, sweep_path: str):
+    def __init__(self, geometry_path: str, sweep_path: str, **kwargs):
 
 
         #load the suspension and sweep (input) data
         self.suspension = load_geometry(geometry_path)
         self.sweep_config = parse_sweep_file(sweep_path)
         self.optimized_points = sorted(list(self.suspension.REQUIRED_POINTS), key=lambda p: p.value)
+        self.count = 0
         # number of variables being optimized, in x,y,z for each coordinate based hardpoint (since tyre data is fixed that doesnt count)
         n_var = len(self.optimized_points) * 3
         # number of objectives (for example camber change, caster change, etc.)
@@ -36,17 +37,19 @@ class SuspensionProblem(ElementwiseProblem):
         initial_hardpoints = np.array(flat_initial_coords)
         
         # 5. Define bounding boxes (permitting +/- 20mm of movement from baseline design)
-        xl = initial_hardpoints - 10.0
-        xu = initial_hardpoints + 10.0
+        xl = initial_hardpoints - 5.0
+        xu = initial_hardpoints + 5.0
         print("Problem Succesfully Initialized!")
-        super().__init__(n_var=n_var, n_obj=n_obj, n_constr=n_con, xl=xl, xu=xu)
+        super().__init__(n_var=n_var, n_obj=n_obj, n_constr=n_con, xl=xl, xu=xu, **kwargs)
     
     def _evaluate(self, x, out, *args, **kwargs):
 
         try:
-            t_start_copy = time.perf_counter()
+            #t_start_copy = time.perf_counter()
+            
             eval_suspension = copy.deepcopy(self.suspension)
-            t_copy = time.perf_counter() - t_start_copy
+            
+            #t_copy = time.perf_counter() - t_start_copy
 
             #update hardpoints
             for i, point_id in enumerate(self.optimized_points):
@@ -58,7 +61,9 @@ class SuspensionProblem(ElementwiseProblem):
                 eval_suspension.hardpoints[point_id] = Point3([pt_x, pt_y, pt_z])
             
             t_start_solve = time.perf_counter()
+
             solution_states, solver_stats = solve_sweep(eval_suspension, self.sweep_config)
+            
             t_solve = time.perf_counter() - t_start_solve
             
             #evaluate here
@@ -79,7 +84,8 @@ class SuspensionProblem(ElementwiseProblem):
             config = eval_suspension.config
             all_sweep_metrics = []
             max_abs_scrub = 0.0
-            t_start_metrics = time.perf_counter()
+            #t_start_metrics = time.perf_counter()
+
             for st in solution_states:
                 metrics = {}
                 if config is not None:
@@ -89,14 +95,18 @@ class SuspensionProblem(ElementwiseProblem):
                     if abs(current_scrub) > max_abs_scrub:
                         max_abs_scrub = abs(current_scrub)
                 all_sweep_metrics.append(metrics)
-            t_metrics = time.perf_counter() - t_start_metrics
+            
+            #t_metrics = time.perf_counter() - t_start_metrics
 
-            # Print the breakdown
-            num_states = len(solution_states) if solution_states else 1
+            # Performance debug info (make sure to uncomment all time code)
+            '''num_states = len(solution_states) if solution_states else 1
             print(f"\n--- Timing Breakdown ---")
             print(f"Deepcopy Time: {t_copy:.4f}s")
             print(f"Total Solve Time: {t_solve:.4f}s ({t_solve/num_states:.4f}s per state)")
-            print(f"Metrics Loop Time: {t_metrics:.4f}s")
+            print(f"Metrics Loop Time: {t_metrics:.4f}s")'''
+
+            '''self.count = self.count + 1
+            print("Iteration Number:", self.count)'''
 
             out["F"] = [max_abs_scrub]
             
