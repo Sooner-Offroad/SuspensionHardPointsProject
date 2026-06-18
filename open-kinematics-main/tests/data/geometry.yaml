@@ -6,22 +6,22 @@ units: MILLIMETERS
 # Hardpoints: Wold Axis, Design Condition.
 hardpoints:
   # Lower Wishbone.
-  lower_wishbone_inboard_front: {x: 250, y: 400, z: 200}
-  lower_wishbone_inboard_rear: {x: -250, y: 450, z: 200}
-  lower_wishbone_outboard: {x: 0, y: 900, z: 200}
+  lower_wishbone_inboard_front: {x: 246.61, y: 399.15, z: 204.91}
+  lower_wishbone_inboard_rear: {x: -252.71, y: 451.85, z: 195.17}
+  lower_wishbone_outboard: {x: -4.99, y: 895.27, z: 196.03}
 
   # Upper Wishbone.
-  upper_wishbone_inboard_front: {x: 220, y: 350, z: 500}
-  upper_wishbone_inboard_rear: {x: -275, y: 350, z: 500}
-  upper_wishbone_outboard: {x: -25, y: 750, z: 500}
+  upper_wishbone_inboard_front: {x: 220.20, y: 346.88, z: 495.15}
+  upper_wishbone_inboard_rear: {x: -275.55, y: 345.21, z: 504.97}
+  upper_wishbone_outboard: {x: -20.03, y: 751.88, z: 503.73}
 
   # Track Rod.
-  trackrod_inboard: {x: 50, y: 200, z: 250}
-  trackrod_outboard: {x: 150, y: 800, z: 275}
+  trackrod_inboard: {x: 49.03, y: 204.98, z: 247.98}
+  trackrod_outboard: {x: 154.63, y: 795.82, z: 278.89}
 
   # Axle.
-  axle_inboard: {x: -20, y: 800, z: 308.426}
-  axle_outboard: {x: -20, y: 950, z: 313.426}
+  axle_inboard: {x: -20.15, y: 804.84, z: 303.49}
+  axle_outboard: {x: -15.95, y: 954.17, z: 318.10}
 
 # Configuration.
 config:
