@@ -17,10 +17,7 @@ def main():
     geometry_yaml = r"C:\Users\adwai\Desktop\Skool\Local Git Repos\SuspensionHardPointsProject\ML_Solver\data\geometry.yaml"
     sweep_yaml = r"C:\Users\adwai\Desktop\Skool\Local Git Repos\SuspensionHardPointsProject\ML_Solver\data\sweep.yaml"
 
-    # initialize the thread pool and create the runner
-    #n_threads = 10
-    #pool = ThreadPool(n_threads)
-    n_procs = 10
+    n_procs = 20
     pool = Pool(n_procs)
     runner = StarmapParallelization(pool.starmap)
 
