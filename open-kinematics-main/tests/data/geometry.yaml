@@ -6,33 +6,33 @@ units: MILLIMETERS
 # Hardpoints: Wold Axis, Design Condition.
 hardpoints:
   # Lower Wishbone.
-  lower_wishbone_inboard_front: {x: 246.61, y: 399.15, z: 204.91}
-  lower_wishbone_inboard_rear: {x: -252.71, y: 451.85, z: 195.17}
-  lower_wishbone_outboard: {x: -4.99, y: 895.27, z: 196.03}
+  lower_wishbone_inboard_front: {x: 69.85, y: 177.8, z: 406.4}
+  lower_wishbone_inboard_rear: {x: -209.55, y: 196.85, z: 355.6}
+  lower_wishbone_outboard: {x: 10.7188, y: 609.6, z: 215.9}
 
   # Upper Wishbone.
-  upper_wishbone_inboard_front: {x: 220.20, y: 346.88, z: 495.15}
-  upper_wishbone_inboard_rear: {x: -275.55, y: 345.21, z: 504.97}
-  upper_wishbone_outboard: {x: -20.03, y: 751.88, z: 503.73}
+  upper_wishbone_inboard_front: {x: 50.8, y: 177.8, z: 571.5}
+  upper_wishbone_inboard_rear: {x: -228.6, y: 196.85, z: 482.6}
+  upper_wishbone_outboard: {x: -11.6078, y: 563.88, z: 381}
 
   # Track Rod.
-  trackrod_inboard: {x: 49.03, y: 204.98, z: 247.98}
-  trackrod_outboard: {x: 154.63, y: 795.82, z: 278.89}
+  trackrod_inboard: {x: 10.16, y: 177.8, z: 457.2}
+  trackrod_outboard: {x: 71.12, y: 604.52, z: 290.83}
 
   # Axle.
-  axle_inboard: {x: -20.15, y: 804.84, z: 303.49}
-  axle_outboard: {x: -15.95, y: 954.17, z: 318.10}
+  axle_inboard: {x: 0, y: 188.976, z: 396.24}
+  axle_outboard: {x: 0, y: 635, z: 330.2}
 
 # Configuration.
 config:
   steered: true
   wheel:
-    offset: 0  # ET convention: positive is inboard.
+    offset: 38  # ET convention: positive is inboard.
     tire:
-      aspect_ratio: 0.55
-      section_width: 270
-      rim_diameter: 13  # Specified in inches.
-  cg_position: {x: 1250, y: 0, z: 450}
+      aspect_ratio: 0.4286
+      section_width: 177.8
+      rim_diameter: 10  # Specified in inches.
+  cg_position: {x: -812.8, y: 0, z: 812.8}
   wheelbase: 2500.0
 
   # Camber Shim Configuration.

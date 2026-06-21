@@ -10,5 +10,5 @@ targets:
   - point: WHEEL_CENTER
     direction:
       axis: Z
-    start: -40
-    stop: 120
+    start: 0
+    stop: 0
