@@ -35,7 +35,7 @@ def main():
                     ref_dirs=ref_dirs)
     
     
-    termination = get_termination("n_gen", 100)
+    termination = get_termination("n_gen", 250)
 
     print("Starting optimization loop...")
     res = minimize(

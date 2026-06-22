@@ -20,8 +20,8 @@ hardpoints:
   trackrod_outboard: {x: 71.12, y: 604.52, z: 290.83}
 
   # Axle.
-  axle_inboard: {x: 69.85, y: 166.5986, z: 457.2}
-  axle_outboard: {x: 0, y: 660.4, z: 292.1}
+  axle_inboard: {x: 0, y: 188.976, z: 396.24}
+  axle_outboard: {x: 0, y: 635, z: 330.2}
 
 # Configuration.
 config:
@@ -32,7 +32,7 @@ config:
       aspect_ratio: 0.4286
       section_width: 177.8
       rim_diameter: 10  # Specified in inches.
-  cg_position: {x: 1250, y: 0, z: 450}
+  cg_position: {x: -812.8, y: 0, z: 812.8}
   wheelbase: 2500.0
 
   # Camber Shim Configuration.

@@ -1,5 +1,5 @@
 version: 1
-steps: 41
+steps: 45
 targets:
   - point: TRACKROD_INBOARD
     direction:

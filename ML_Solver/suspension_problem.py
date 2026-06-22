@@ -37,8 +37,8 @@ class SuspensionProblem(ElementwiseProblem):
         initial_hardpoints = np.array(flat_initial_coords)
         
         # 5. Define bounding boxes (permitting +/- 20mm of movement from baseline design)
-        xl = initial_hardpoints - 5.0
-        xu = initial_hardpoints + 5.0
+        xl = initial_hardpoints - 10.0
+        xu = initial_hardpoints + 10.0
         print("Problem Succesfully Initialized!")
         super().__init__(n_var=n_var, n_obj=n_obj, n_constr=n_con, xl=xl, xu=xu, **kwargs)
     

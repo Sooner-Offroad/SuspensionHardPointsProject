@@ -5,10 +5,10 @@ targets:
     direction:
       axis: Y
     mode: relative
-    start: -40
-    stop: 40
+    start: 0
+    stop: 0
   - point: WHEEL_CENTER
     direction:
       axis: Z
-    start: 0
-    stop: 0
+    start: -40
+    stop: 120
