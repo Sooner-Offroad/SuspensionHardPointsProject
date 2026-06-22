@@ -27,7 +27,7 @@ hardpoints:
 config:
   steered: true
   wheel:
-    offset: -38  # ET convention: positive is inboard.
+    offset: 38  # ET convention: positive is inboard.
     tire:
       aspect_ratio: 0.4286
       section_width: 177.8
