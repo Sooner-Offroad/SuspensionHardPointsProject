@@ -21,7 +21,7 @@ hardpoints:
 
   # Axle.
   axle_inboard: {x: 0, y: 188.976, z: 396.24}
-  axle_outboard: {x: 0, y: 635, z: 330.2}
+  axle_outboard: {x: 0, y: 660.4, z: 292.1}
 
 # Configuration.
 config:
@@ -29,22 +29,22 @@ config:
   wheel:
     offset: 38  # ET convention: positive is inboard.
     tire:
-      aspect_ratio: .93  #0.4286
-      section_width: 177.8 
-      rim_diameter: 10  # Specified in inches.
+      aspect_ratio: 0.928
+      section_width: 177.8
+      rim_diameter: 6.5  # Specified in inches.
   cg_position: {x: -812.8, y: 0, z: 812.8}
-  wheelbase: 1250.0
+  wheelbase: 1320.8
 
   # Camber Shim Configuration.
-#  camber_shim:
-#    shim_face_point_a: {x: -15.0, y: 590.0, z: 410.0}
-#    shim_face_point_b: {x: -15.0, y: 590.0, z: 390.0}
-#    shim_face_normal: {x: 0.0, y: 1.0, z: 0.0}
-#    design_thickness: 0.001
-#    setup_thickness: 0.001
+  camber_shim:
+    shim_face_point_a: {x: -25.0, y: 750.0, z: 510.0}
+    shim_face_point_b: {x: -25.0, y: 750.0, z: 490.0}
+    shim_face_normal: {x: 0.0, y: 0.0, z: 1}
+    design_thickness: 0
+    setup_thickness: 0
 
   # Points that move with the upright when camber shim is applied.
   upright_mounted_points:
-    #- axle_inboard
+    - axle_inboard
     - axle_outboard
     - trackrod_outboard
