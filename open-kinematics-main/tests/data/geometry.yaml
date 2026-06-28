@@ -19,7 +19,7 @@ hardpoints:
   trackrod_inboard: {x: -180.43, y: 190.6, z: 455.37}
   trackrod_outboard: {x: -90.95, y: 566.14, z: 328.82}
 
-  # Axle.
+  # Axle (spindle length)
   axle_inboard: {x: 0, y: 68.61, z: 401.86}
   axle_outboard: {x: 0, y: 660.4, z: 292.1}
 
