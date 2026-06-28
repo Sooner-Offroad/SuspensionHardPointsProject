@@ -465,6 +465,7 @@ class OptimizerTab(tk.Frame):
         self.apply_cb = apply_cb
         self._running = False
         self._last = None
+        self._selected = None
         self._knowns_vars = {}
         self._goals_vars  = {}
         self._bounds_vars = {}
@@ -752,6 +753,29 @@ class OptimizerTab(tk.Frame):
                                   font=("Consolas",9), justify="left")
         self._viol_lbl.pack(fill="x", padx=12)
 
+        # Pareto front browser — alternative trade-off designs found by the
+        # same run. There is rarely one "best" design across 11 goals at
+        # once; this lets you compare a handful of real trade-offs (one
+        # might nail bump steer at the cost of swing arm, another the
+        # reverse) and pick based on judgment instead of chasing one score.
+        front_hdr = tk.Frame(parent, bg=BG2); front_hdr.pack(fill="x", padx=10, pady=(8,2))
+        tk.Label(front_hdr, text="Alternative designs (Pareto front)", bg=BG2, fg=ACCENT,
+                 font=("Consolas",10,"bold")).pack(side="left")
+        tk.Label(front_hdr, text="  click to compare — selection controls 'Apply to Visualizer' below",
+                 bg=BG2, fg=DIM, font=("Consolas",8)).pack(side="left")
+        front_frame = tk.Frame(parent, bg=BG2); front_frame.pack(fill="x", padx=10)
+        front_scroll = tk.Scrollbar(front_frame, orient="vertical")
+        self._front_list = tk.Listbox(front_frame, bg=BG, fg=TEXT,
+                                      font=("Consolas",9), height=6,
+                                      bd=0, highlightthickness=0,
+                                      selectbackground=ACCENT, selectforeground=BG,
+                                      yscrollcommand=front_scroll.set)
+        front_scroll.config(command=self._front_list.yview)
+        self._front_list.pack(side="left", fill="x", expand=True)
+        front_scroll.pack(side="left", fill="y")
+        self._front_list.bind("<<ListboxSelect>>", self._on_front_select)
+        self._front_results = []  # parallel list of OptResult for _front_list rows
+
         # Per-goal breakdown table
         tk.Label(parent, text="Goal breakdown", bg=BG2, fg=ACCENT,
                  font=("Consolas",10,"bold")).pack(fill="x", padx=10, pady=(8,2))
@@ -867,15 +891,48 @@ class OptimizerTab(tk.Frame):
         self._run_btn.config(state="normal")
         self._apply_btn.config(state="normal")
         self._last = r
+        self._status_lbl.config(text="Done", fg=GREEN)
+
+        # Populate the Pareto front browser. front[0] is the same
+        # "recommended" candidate as before — selecting it is the default,
+        # so existing behavior (score/breakdown/hardpoints/Apply) is
+        # unchanged if you never touch the list.
+        front = r.pareto_front if r.pareto_front else [r]
+        front_sorted = sorted(front, key=lambda o: o.final_score)
+        self._front_results = front_sorted
+        self._front_list.delete(0, "end")
+        for i, o in enumerate(front_sorted):
+            tag = " (recommended)" if i == 0 else ""
+            self._front_list.insert(
+                "end", f"#{i+1:>2}  score {o.final_score:6.2f}  "
+                       f"{'OK' if not o.violations else str(len(o.violations))+' viol':>8}{tag}")
+        self._front_list.selection_clear(0, "end")
+        self._front_list.selection_set(0)
+
+        self._show_result(front_sorted[0])
+
+        # Switch to results tab
+        self._results_nb.select(3)
+
+    def _on_front_select(self, event):
+        sel = self._front_list.curselection()
+        if not sel or sel[0] >= len(self._front_results):
+            return
+        self._show_result(self._front_results[sel[0]])
+
+    def _show_result(self, r: OptResult):
+        """Update score/violations/breakdown/hardpoints display for a given
+        candidate, and mark it as the one 'Apply to Visualizer' will use."""
+        self._selected = r
 
         raw_score = r.final_score
         display_score = max(0, 100 - raw_score * 20)
         color = GREEN if display_score > 75 else YELLOW if display_score > 50 else RED
         self._score_lbl.config(text=f"{display_score:.0f}", fg=color)
         conv_txt = "✓ converged" if r.converged else "~ not fully converged"
+        engine_txt = getattr(r, "engine", "built-in")
         self._conv_lbl.config(
-            text=f"{conv_txt}  |  {r.n_evals} evaluations", fg=DIM)
-        self._status_lbl.config(text="Done", fg=GREEN)
+            text=f"{conv_txt}  |  {r.n_evals} evaluations  |  engine: {engine_txt}", fg=DIM)
 
         # Violations
         if r.violations:
@@ -920,9 +977,6 @@ class OptimizerTab(tk.Frame):
         self._hp_text.insert("1.0", "\n".join(lines))
         self._hp_text.config(state="disabled")
 
-        # Switch to results tab
-        self._results_nb.select(3)
-
     def _error(self, err):
         self._running = False
         self._prog.stop()
@@ -930,8 +984,9 @@ class OptimizerTab(tk.Frame):
         self._status_lbl.config(text=f"Error: {err}", fg=RED)
 
     def _apply(self):
-        if self._last:
-            self.apply_cb(self._last.hardpoints)
+        target = self._selected or self._last
+        if target:
+            self.apply_cb(target.hardpoints)
             self._status_lbl.config(text="Applied to Visualizer ✓", fg=GREEN)
 
 
