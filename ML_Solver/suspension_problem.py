@@ -23,7 +23,7 @@ class SuspensionProblem(ElementwiseProblem):
         # number of variables being optimized, in x,y,z for each coordinate based hardpoint (since tyre data is fixed that doesnt count)
         n_var = len(self.optimized_points) * 3
         # number of objectives (for example camber change, caster change, etc.)
-        n_obj = 1
+        n_obj = 7
         # number of constraints, these are objectives the solver MUST achieve exactly
         n_con = 0
         flat_initial_coords = []
@@ -65,9 +65,7 @@ class SuspensionProblem(ElementwiseProblem):
             solution_states, solver_stats = solve_sweep(eval_suspension, self.sweep_config)
             
             t_solve = time.perf_counter() - t_start_solve
-            
-            #evaluate here
-            solution_states, solver_stats = solve_sweep(eval_suspension, self.sweep_config)
+
 
             # --- TEMPORARY DEBUG CODE ---
             '''print("\n--- Checking Solved Positions for the First State ---")
@@ -82,18 +80,55 @@ class SuspensionProblem(ElementwiseProblem):
 
             output_points = eval_suspension.OUTPUT_POINTS
             config = eval_suspension.config
+
+            static_camber = 0.0
+            static_state_metrics = compute_metrics_for_state(eval_suspension.initial_state(), eval_suspension, config)
+            static_camber = static_state_metrics.get("camber_deg", 0.0)
+
             all_sweep_metrics = []
             max_abs_scrub = 0.0
+            max_abs_toe = 0.0
+            max_abs_caster = 0.0
+            max_abs_kpi = 0.0
+            max_abs_mech_trail = 0.0
+            max_abs_camber_rate = 0.0 # change in camber per inch of travel
             #t_start_metrics = time.perf_counter()
+            prev_wheel_center_z = None
+            prev_camber = None
 
-            for st in solution_states:
+            for i,st in enumerate(solution_states):
                 metrics = {}
                 if config is not None:
                     # This returns a dictionary of metric names to floats
                     metrics = compute_metrics_for_state(st, eval_suspension, config)
+
                     current_scrub = metrics.get("scrub_radius_mm", 0.0)
-                    if abs(current_scrub) > max_abs_scrub:
-                        max_abs_scrub = abs(current_scrub)
+                    current_toe = metrics.get("roadwheel_angle_deg", 0.0)
+                    current_caster = metrics.get("caster_deg", 0.0)
+                    current_kpi = metrics.get("kpi_deg", 0.0)
+                    current_mech_trail = metrics.get("mechanical_trail_mm", 0.0)
+                    current_camber = metrics.get("camber_deg", 0.0)
+                    current_wheel_center = st.get(16) # Get position of a specific point. returns the point3 object
+                    current_wheel_center_z = current_wheel_center[2]
+
+                   # This saves the wheel center position at the start of the sweep
+                    if i > 0:
+                        instantaneous_travel_inches = (current_wheel_center_z - prev_wheel_center_z) / 25.4
+                        delta_camber = current_camber - prev_camber
+                        if abs(instantaneous_travel_inches) > 1e-4:
+                            instantaneous_camber_rate = delta_camber / instantaneous_travel_inches
+                            max_abs_camber_rate = max(max_abs_camber_rate, abs(instantaneous_camber_rate))                    
+
+
+                    prev_wheel_center_z = current_wheel_center_z
+                    prev_camber = current_camber
+
+                    max_abs_scrub = max(max_abs_scrub, abs(current_scrub))
+                    max_abs_toe = max(max_abs_toe, abs(current_toe))
+                    max_abs_caster = max(max_abs_caster, abs(current_caster))
+                    max_abs_kpi = max(max_abs_kpi, abs(current_kpi))
+                    max_abs_mech_trail = max(max_abs_mech_trail, abs(current_mech_trail))
+
                 all_sweep_metrics.append(metrics)
             
             #t_metrics = time.perf_counter() - t_start_metrics
@@ -108,8 +143,15 @@ class SuspensionProblem(ElementwiseProblem):
             '''self.count = self.count + 1
             print("Iteration Number:", self.count)'''
 
-            out["F"] = [max_abs_scrub]
-            
+            f1 = max_abs_scrub
+            f2 = abs(static_camber)
+            f3 = max_abs_toe
+            f4 = abs(max_abs_caster - 8.5)
+            f5 = abs(max_abs_kpi - 10)
+            f6 = abs(max_abs_mech_trail - 1.5)
+            f7 = abs(max_abs_camber_rate - 0.5)
+
+            out["F"] = [f1, f2, f3, f4, f5, f6, f7]       
 
         except Exception as e:
             print(f"Evaluation crashed: {type(e).__name__} - {e}")

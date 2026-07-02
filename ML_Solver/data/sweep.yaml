@@ -1,5 +1,5 @@
 version: 1
-steps: 12
+steps: 15
 targets:
   - point: TRACKROD_INBOARD
     direction:
@@ -10,5 +10,5 @@ targets:
   - point: WHEEL_CENTER
     direction:
       axis: Z
-    start: -40
-    stop: 120
+    start: -127
+    stop: 254

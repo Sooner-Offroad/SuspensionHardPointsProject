@@ -116,28 +116,17 @@ def calculate_toe(ctx: MetricContext) -> float:
     then projecting it onto the vehicle's ground plane (XY plane).
     """
 
-
-    # BELOW CODE IS GEMINI AI MODIFIED: NEEDS LOGICAL VERIFICATION; HAS BEEN VERIFIED BY RUNNING.
-
     side = ctx.side_sign
-    axle = ctx.wheel_axis  # Points inboard -> outboard
+    axle = ctx.wheel_axis
 
-    # 1. Get the vector pointing straight down the centerline of the tire
-    wheel_center = ctx.wheel_center
-    cp_center = ctx.contact_patch_center
-    wheel_down = (cp_center - wheel_center).normalize()
+    # Project axle vector onto the top view plane (XY plane).
+    proj_x = axle[Axis.X]
+    proj_y = axle[Axis.Y]
 
-    # 2. Cross product yields the clean 3D forward vector (+X)
-    # Multiply by side_sign to ensure it points forward for both sides
-    wheel_forward = wheel_down.cross(axle) * side
-
-    # 3. Project this true forward vector onto the top view plane (XY plane)
-    proj_x = wheel_forward[Axis.X]
-    proj_y = wheel_forward[Axis.Y]
-
-    # Toe-in turns the front of the wheel inward (towards vehicle centerline).
-    # Left side (Y > 0): toe-in tilts the forward vector towards -Y.
-    # Right side (Y < 0): toe-in tilts the forward vector towards +Y.
-    toe_rad = np.arctan2(-side * proj_y, proj_x)
+    # Toe-in results in the axle vector pointing slightly forward (+X).
+    if side > 0:  # Left side
+        toe_rad = np.arctan2(proj_x, proj_y)
+    else:  # Right side: measure relative to -Y axis
+        toe_rad = np.arctan2(proj_x, -proj_y)
 
     return float(np.rad2deg(toe_rad))

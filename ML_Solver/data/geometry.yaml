@@ -6,22 +6,22 @@ units: MILLIMETERS
 # Hardpoints: Wold Axis, Design Condition.
 hardpoints:
   # Lower Wishbone.
-  lower_wishbone_inboard_front: {x: 69.85, y: 177.8, z: 406.4}
-  lower_wishbone_inboard_rear: {x: -209.55, y: 196.85, z: 355.6}
-  lower_wishbone_outboard: {x: 10.7188, y: 609.6, z: 215.9}
+  lower_wishbone_inboard_front: {x: -70.1, y: 191.25, z: 367.63}
+  lower_wishbone_inboard_rear: {x: -203.17, y: 189.76, z: 351.14}
+  lower_wishbone_outboard: {x: 4.52, y: 622.19, z: 204.81}
 
   # Upper Wishbone.
-  upper_wishbone_inboard_front: {x: 50.8, y: 177.8, z: 571.5}
-  upper_wishbone_inboard_rear: {x: -228.6, y: 196.85, z: 482.6}
-  upper_wishbone_outboard: {x: -11.6078, y: 563.88, z: 381}
+  upper_wishbone_inboard_front: {x: 3.85, y: 200.8, z: 543.85}
+  upper_wishbone_inboard_rear: {x: -208.94, y: 194.63, z: 475.51}
+  upper_wishbone_outboard: {x: -24.74, y: 584.55, z: 384.76}
 
   # Track Rod.
-  trackrod_inboard: {x: 10.16, y: 177.8, z: 457.2}
-  trackrod_outboard: {x: 71.12, y: 604.52, z: 290.83}
+  trackrod_inboard: {x: -180.43, y: 190.6, z: 455.37}
+  trackrod_outboard: {x: -90.95, y: 566.14, z: 328.82}
 
-  # Axle.
-  axle_inboard: {x: 0, y: 188.976, z: 396.24}
-  axle_outboard: {x: 0, y: 635, z: 330.2}
+  # Axle (spindle length)
+  axle_inboard: {x: 0, y: 647.7, z: 292.1}
+  axle_outboard: {x: 0, y: 698.5, z: 292.1}
 
 # Configuration.
 config:
@@ -29,19 +29,19 @@ config:
   wheel:
     offset: 38  # ET convention: positive is inboard.
     tire:
-      aspect_ratio: 0.4286
+      aspect_ratio: 0.928
       section_width: 177.8
-      rim_diameter: 10  # Specified in inches.
+      rim_diameter: 6.5  # Specified in inches.
   cg_position: {x: -812.8, y: 0, z: 812.8}
-  wheelbase: 2500.0
+  wheelbase: 1320.8
 
   # Camber Shim Configuration.
   camber_shim:
     shim_face_point_a: {x: -25.0, y: 750.0, z: 510.0}
     shim_face_point_b: {x: -25.0, y: 750.0, z: 490.0}
-    shim_face_normal: {x: 0.0, y: 1.0, z: 0.0}
-    design_thickness: 30.0
-    setup_thickness: 30.0
+    shim_face_normal: {x: 0.0, y: 0.0, z: 1}
+    design_thickness: 0
+    setup_thickness: 0
 
   # Points that move with the upright when camber shim is applied.
   upright_mounted_points:
