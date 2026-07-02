@@ -63,6 +63,21 @@ def main():
     print(f"Best Suspension Objective Values (Deltas):\n{best_suspension_metrics}")
 
     with open("results.txt", "a") as f:
+        f.write(f"=== Entire Pareto Front ({len(points_pareto)} Configurations) ===\n")
+        
+        for design in points_pareto:
+            # precision=2 matches your preferred rounding
+            # separator=', ' cleanly separates each coordinate
+            # max_line_width=np.inf prevents NumPy from wrapping text mid-array
+            formatted_string = np.array2string(
+                design, 
+                precision=2, 
+                separator=', ', 
+                max_line_width=np.inf
+            )
+            f.write(f"{formatted_string}\n")
+        
+        f.write("\n" + "="*50 + "\n\n")
         f.write("=== Optimization Run Details ===\n")
         f.write("Best Suspension Points (Coordinates):\n")
         f.write(np.array2string(best_suspension_geometry, precision=3, separator=', '))
