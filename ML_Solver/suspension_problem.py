@@ -26,6 +26,10 @@ class SuspensionProblem(ElementwiseProblem):
         n_obj = 7
         # number of constraints, these are objectives the solver MUST achieve exactly
         n_con = 0
+
+        # keep count of crashes
+        self.crashes = 0
+
         flat_initial_coords = []
         for point_id in self.optimized_points:
             point3_obj = self.suspension.hardpoints[point_id]
@@ -81,16 +85,22 @@ class SuspensionProblem(ElementwiseProblem):
             output_points = eval_suspension.OUTPUT_POINTS
             config = eval_suspension.config
 
+            static_scrub = 0.0
             static_camber = 0.0
+            static_toe = 0.0
+            static_kpi = 0.0
+            static_mech_trail = 0.0
+
             static_state_metrics = compute_metrics_for_state(eval_suspension.initial_state(), eval_suspension, config)
+            
+            static_scrub = static_state_metrics.get("scrub_radius_mm", 0.0)
             static_camber = static_state_metrics.get("camber_deg", 0.0)
+            static_toe = static_state_metrics.get("roadwheel_angle_deg", 0.0)
+            static_kpi = static_state_metrics.get("kpi_deg", 0.0)
+            static_mech_trail = static_state_metrics.get("mechanical_trail_mm", 0.0)
+
 
             all_sweep_metrics = []
-            max_abs_scrub = 0.0
-            max_abs_toe = 0.0
-            max_abs_caster = 0.0
-            max_abs_kpi = 0.0
-            max_abs_mech_trail = 0.0
             max_abs_camber_rate = 0.0 # change in camber per inch of travel
             #t_start_metrics = time.perf_counter()
             prev_wheel_center_z = None
@@ -102,11 +112,7 @@ class SuspensionProblem(ElementwiseProblem):
                     # This returns a dictionary of metric names to floats
                     metrics = compute_metrics_for_state(st, eval_suspension, config)
 
-                    current_scrub = metrics.get("scrub_radius_mm", 0.0)
                     current_toe = metrics.get("roadwheel_angle_deg", 0.0)
-                    current_caster = metrics.get("caster_deg", 0.0)
-                    current_kpi = metrics.get("kpi_deg", 0.0)
-                    current_mech_trail = metrics.get("mechanical_trail_mm", 0.0)
                     current_camber = metrics.get("camber_deg", 0.0)
                     current_wheel_center = st.get(16) # Get position of a specific point. returns the point3 object
                     current_wheel_center_z = current_wheel_center[2]
@@ -123,17 +129,13 @@ class SuspensionProblem(ElementwiseProblem):
                     prev_wheel_center_z = current_wheel_center_z
                     prev_camber = current_camber
 
-                    max_abs_scrub = max(max_abs_scrub, abs(current_scrub))
-                    max_abs_toe = max(max_abs_toe, abs(current_toe))
-                    max_abs_caster = max(max_abs_caster, abs(current_caster))
-                    max_abs_kpi = max(max_abs_kpi, abs(current_kpi))
-                    max_abs_mech_trail = max(max_abs_mech_trail, abs(current_mech_trail))
+
 
                 all_sweep_metrics.append(metrics)
             
             #t_metrics = time.perf_counter() - t_start_metrics
 
-            # Performance debug info (make sure to uncomment all time code)
+            # Performance debug info (make sure to uncomment all time code for this to work)
             '''num_states = len(solution_states) if solution_states else 1
             print(f"\n--- Timing Breakdown ---")
             print(f"Deepcopy Time: {t_copy:.4f}s")
@@ -143,18 +145,20 @@ class SuspensionProblem(ElementwiseProblem):
             '''self.count = self.count + 1
             print("Iteration Number:", self.count)'''
 
-            f1 = max_abs_scrub
+            f1 = static_scrub
             f2 = abs(static_camber)
-            f3 = max_abs_toe
-            f4 = abs(max_abs_caster - 8.5)
-            f5 = abs(max_abs_kpi - 10)
-            f6 = abs(max_abs_mech_trail - 1.5)
-            f7 = abs(max_abs_camber_rate - 0.5)
+            f3 = abs(static_toe)
+            f4 = abs(static_kpi)
+            f5 = abs(static_mech_trail)
+            f6 = max_abs_camber_rate
+            f7 = max_abs_toe_rate
 
             out["F"] = [f1, f2, f3, f4, f5, f6, f7]       
 
         except Exception as e:
-            print(f"Evaluation crashed: {type(e).__name__} - {e}")
+            #print(f"Evaluation crashed: {type(e).__name__} - {e}")
+            self.crashes = self.crashes + 1
+            print("Solver Fail Count:", self.crashes)
             # punish bad results here
             out["F"] = [1e6] * self.n_obj
 
