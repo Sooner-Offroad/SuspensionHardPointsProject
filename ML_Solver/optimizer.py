@@ -65,7 +65,7 @@ def main():
     print(f"Execution time: {res.exec_time:.2f} seconds")
     print(f"Best Suspension Points (Coordinates):\n{best_suspension_geometry}")
     print(f"Best Suspension Objective Values (Deltas):\n{best_suspension_metrics}")
-    print("\nThe objective values are in the following order: scrub radius, static camber, toe, caster, kpi, mechanical trail, camber rate.")
+    print("\nThe objective values are in the following order: scrub radius, static camber, toe, kpi, mechanical trail, camber rate, toe rate.")
     print("Units: millimeters and degrees.")
 
     with open("results.txt", "a") as f:
