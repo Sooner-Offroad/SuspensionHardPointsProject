@@ -20,7 +20,8 @@ def main():
     geometry_yaml = r"C:\Users\adwai\Desktop\Skool\Local Git Repos\SuspensionHardPointsProject\ML_Solver\data\geometry.yaml" 
     sweep_yaml = r"C:\Users\adwai\Desktop\Skool\Local Git Repos\SuspensionHardPointsProject\ML_Solver\data\sweep.yaml"
 
-    n_procs = 20 # number of logical processors, check how many you have available before running, using cntl + shift + esc and checking cpu logical processors amount
+    n_procs = 20 # number of logical processors, check how many you have available before running, using cntl + shift + esc and checking cpu logical processors amount.
+    #run about 3-4 processors lower than what is available. You can run max but your cpu will be fully occupied. The lower the number of cores, the longer it will take.
     pool = Pool(n_procs)
     runner = StarmapParallelization(pool.starmap)
 
@@ -47,6 +48,7 @@ def main():
         seed=1,          # Setting a seed makes your runs reproducible
         verbose=True     # This prints generation progress in your terminal
     )
+
     pool.close()
     pool.join()
     points_pareto = res.X

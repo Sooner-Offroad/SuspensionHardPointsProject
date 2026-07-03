@@ -105,6 +105,7 @@ class SuspensionProblem(ElementwiseProblem):
             #t_start_metrics = time.perf_counter()
             prev_wheel_center_z = None
             prev_camber = None
+            prev_toe = None
 
             for i,st in enumerate(solution_states):
                 metrics = {}
@@ -121,13 +122,18 @@ class SuspensionProblem(ElementwiseProblem):
                     if i > 0:
                         instantaneous_travel_inches = (current_wheel_center_z - prev_wheel_center_z) / 25.4
                         delta_camber = current_camber - prev_camber
+                        delta_toe = current_toe - prev_toe
                         if abs(instantaneous_travel_inches) > 1e-4:
                             instantaneous_camber_rate = delta_camber / instantaneous_travel_inches
-                            max_abs_camber_rate = max(max_abs_camber_rate, abs(instantaneous_camber_rate))                    
+                            max_abs_camber_rate = max(max_abs_camber_rate, abs(instantaneous_camber_rate))
+
+                            instantaneous_toe_rate = delta_toe / instantaneous_travel_inches
+                            max_abs_toe_rate = max(max_abs_toe_rate, abs(instantaneous_toe_rate))                     
 
 
                     prev_wheel_center_z = current_wheel_center_z
                     prev_camber = current_camber
+                    prev_toe = current_toe
 
 
 
@@ -146,11 +152,11 @@ class SuspensionProblem(ElementwiseProblem):
             print("Iteration Number:", self.count)'''
 
             # objectives, they are output in this order once the run is finished. UNITS ARE MM AND DEGREES
-            f1 = static_scrub
+            f1 = abs(static_scrub)
             f2 = abs(static_camber)
             f3 = abs(static_toe)
-            f4 = abs(static_kpi)
-            f5 = abs(static_mech_trail)
+            f4 = abs(static_kpi- 10)
+            f5 = abs(static_mech_trail - 38.1)
             f6 = max_abs_camber_rate
             f7 = max_abs_toe_rate
 
