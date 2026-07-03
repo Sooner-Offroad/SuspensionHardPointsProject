@@ -55,7 +55,7 @@ def main():
     objectives_pareto = res.F
 
     # weights, check order in suspension_problem.py
-    weights = np.array([0.22, 0.22, 0.22, 0.04, 0.04, 0.04, 0.22])
+    weights = np.array([0.22, 0.22, 0.22, 0.04, 0.04, 0.22, 0.04])
     best_idx = PseudoWeights(weights).do(objectives_pareto)
 
     best_suspension_geometry = points_pareto[best_idx]
