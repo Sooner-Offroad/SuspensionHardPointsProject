@@ -40,7 +40,7 @@ class SuspensionProblem(ElementwiseProblem):
         # Convert to a NumPy array (this will automatically be of length n_var!)
         initial_hardpoints = np.array(flat_initial_coords)
         
-        # 5. Define bounding boxes (permitting +/- 20mm of movement from baseline design)
+        # 5. Define bounding boxes (permitting +/- 10mm of movement from baseline design) (Box side length is double of the value here) UNITS ARE MM
         xl = initial_hardpoints - 10.0
         xu = initial_hardpoints + 10.0
         print("Problem Succesfully Initialized!")
@@ -92,7 +92,7 @@ class SuspensionProblem(ElementwiseProblem):
             static_mech_trail = 0.0
 
             static_state_metrics = compute_metrics_for_state(eval_suspension.initial_state(), eval_suspension, config)
-            
+
             static_scrub = static_state_metrics.get("scrub_radius_mm", 0.0)
             static_camber = static_state_metrics.get("camber_deg", 0.0)
             static_toe = static_state_metrics.get("roadwheel_angle_deg", 0.0)
@@ -145,6 +145,7 @@ class SuspensionProblem(ElementwiseProblem):
             '''self.count = self.count + 1
             print("Iteration Number:", self.count)'''
 
+            # objectives, they are output in this order once the run is finished. UNITS ARE MM AND DEGREES
             f1 = static_scrub
             f2 = abs(static_camber)
             f3 = abs(static_toe)

@@ -16,10 +16,11 @@ from pymoo.mcdm.pseudo_weights import PseudoWeights
 
 
 def main():
+    # Set the location to wherever your geometry yaml and sweep files are 
     geometry_yaml = r"C:\Users\adwai\Desktop\Skool\Local Git Repos\SuspensionHardPointsProject\ML_Solver\data\geometry.yaml" 
     sweep_yaml = r"C:\Users\adwai\Desktop\Skool\Local Git Repos\SuspensionHardPointsProject\ML_Solver\data\sweep.yaml"
 
-    n_procs = 20
+    n_procs = 20 # number of logical processors, check how many you have available before running, using cntl + shift + esc and checking cpu logical processors amount
     pool = Pool(n_procs)
     runner = StarmapParallelization(pool.starmap)
 
@@ -35,7 +36,7 @@ def main():
     # create the algorithm object
     algorithm = UNSGA3(ref_dirs=ref_dirs)
     
-    
+    # increase the number here if you want it to run more generations
     termination = get_termination("n_gen", 250)
 
     print("Starting optimization loop...")
@@ -51,6 +52,7 @@ def main():
     points_pareto = res.X
     objectives_pareto = res.F
 
+    # weights, check order in suspension_problem.py
     weights = np.array([0.22, 0.22, 0.22, 0.04, 0.04, 0.04, 0.22])
     best_idx = PseudoWeights(weights).do(objectives_pareto)
 
