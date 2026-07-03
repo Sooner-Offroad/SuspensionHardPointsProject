@@ -102,6 +102,7 @@ class SuspensionProblem(ElementwiseProblem):
 
             all_sweep_metrics = []
             max_abs_camber_rate = 0.0 # change in camber per inch of travel
+            max_abs_toe_rate = 0.0 # change in toe per inch of travel
             #t_start_metrics = time.perf_counter()
             prev_wheel_center_z = None
             prev_camber = None
