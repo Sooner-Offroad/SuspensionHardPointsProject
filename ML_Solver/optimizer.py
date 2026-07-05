@@ -44,7 +44,7 @@ def main():
     DESIGN_LABELS = [f"{point}_{axis}" for point in HARDPOINTS for axis in ["X", "Y", "Z"]] 
 
     # Labels for objectives in order. Editing this will only change the labels, similar to above.
-    OBJECTIVE_LABELS = ["Static Scrub", "Camber", "Toe", "Kingpin Inclination", "Mechanical Trail", "Camber Rate", "Toe Rate"]
+    OBJECTIVE_LABELS = ["Static Scrub", "Static Camber", "Static Toe", "Static Kingpin Inclination", "Static Mechanical Trail", "Max Camber Rate", "Max Toe Rate"]
 
     # Values for objectives in order. Changing this WILL affect the values of the objectives, in the order given in suspension_problem. Units mm and degrees, except camber and toe rate which are degrees/inch.
     OBJECTIVE_VALUES = [0, 0, 0, 10, 38.1, 0, 0]
