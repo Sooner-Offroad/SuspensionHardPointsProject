@@ -30,18 +30,20 @@ def main():
     "\nAXLE_INBOARD",
     "\nAXLE_OUTBOARD",
     ]
-    
+
     DESIGN_LABELS = [f"{point}_{axis}" for point in HARDPOINTS for axis in ["X", "Y", "Z"]] 
     OBJECTIVE_LABELS = ["Static Scrub", "Camber", "Toe", "Kingpin Inclination", "Mechanical Trail", "Camber Rate", "Toe Rate"]
 
     # Values for objectives in order. Changing this WILL affect the values of the objectives, in the order given in suspension_problem. Units mm and degrees.
     OBJECTIVE_VALUES = [0, 0, 0, 10, 38.1, 0, 0]
+    # Length of side of cube in which optimizer will search for each point.
+    cube_side_length_mm = 30 #mm
 
-    # Set the location to wherever your geometry yaml and sweep files are 
+    # Set the location to wherever your geometry yaml and sweep files are. VERY IMPORTANT
     geometry_yaml = r"C:\Users\adwai\Desktop\Skool\Local Git Repos\SuspensionHardPointsProject\ML_Solver\data\geometry.yaml" 
     sweep_yaml = r"C:\Users\adwai\Desktop\Skool\Local Git Repos\SuspensionHardPointsProject\ML_Solver\data\sweep.yaml"
 
-    n_procs = 30 # number of logical processors, check how many you have available before running, using cntl + shift + esc and checking cpu logical processors amount.
+    n_procs = 20 # number of logical processors, check how many you have available before running, using cntl + shift + esc and checking cpu logical processors amount.
     #run about 3-4 processors lower than what is available. You can run max but your cpu will be fully occupied. The lower the number of cores, the longer it will take.
     pool = Pool(n_procs)
     runner = StarmapParallelization(pool.starmap)
@@ -49,7 +51,7 @@ def main():
     problem = SuspensionProblem(
         geometry_path=geometry_yaml, 
         sweep_path=sweep_yaml,
-        cube_side_length_mm=30.0,
+        cube_side_length_mm=cube_side_length_mm,
         objective_values=OBJECTIVE_VALUES,
         elementwise_runner=runner
     )
@@ -61,7 +63,7 @@ def main():
     algorithm = UNSGA3(ref_dirs=ref_dirs)
     
     # increase the number here if you want it to run more generations
-    termination = get_termination("n_gen", 150)
+    termination = get_termination("n_gen", 2)
 
     # Loop code starts here
     print("Starting optimization loop...")
