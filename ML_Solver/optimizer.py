@@ -19,17 +19,18 @@ def main():
 
     # Labels for points and objectives in order. Changing this will only change the labels, you need to go into suspension.py to actually change the objectives/points
     HARDPOINTS = [
-    "LOWER_WISHBONE_INBOARD_FRONT",
-    "LOWER_WISHBONE_INBOARD_REAR",
-    "LOWER_WISHBONE_OUTBOARD",
-    "UPPER_WISHBONE_INBOARD_FRONT",
-    "UPPER_WISHBONE_INBOARD_REAR",
-    "UPPER_WISHBONE_OUTBOARD",
-    "TRACKROD_INBOARD",
-    "TRACKROD_OUTBOARD",
-    "AXLE_INBOARD",
-    "AXLE_OUTBOARD",
+    "\nLOWER_WISHBONE_INBOARD_FRONT",
+    "\nLOWER_WISHBONE_INBOARD_REAR",
+    "\nLOWER_WISHBONE_OUTBOARD",
+    "\nUPPER_WISHBONE_INBOARD_FRONT",
+    "\nUPPER_WISHBONE_INBOARD_REAR",
+    "\nUPPER_WISHBONE_OUTBOARD",
+    "\nTRACKROD_INBOARD",
+    "\nTRACKROD_OUTBOARD",
+    "\nAXLE_INBOARD",
+    "\nAXLE_OUTBOARD",
     ]
+    
     DESIGN_LABELS = [f"{point}_{axis}" for point in HARDPOINTS for axis in ["X", "Y", "Z"]] 
     OBJECTIVE_LABELS = ["Static Scrub", "Camber", "Toe", "Kingpin Inclination", "Mechanical Trail", "Camber Rate", "Toe Rate"]
 
@@ -60,7 +61,7 @@ def main():
     algorithm = UNSGA3(ref_dirs=ref_dirs)
     
     # increase the number here if you want it to run more generations
-    termination = get_termination("n_gen", 100)
+    termination = get_termination("n_gen", 150)
 
     # Loop code starts here
     print("Starting optimization loop...")
@@ -84,13 +85,6 @@ def main():
     best_suspension_geometry = points_pareto[best_idx]
     best_suspension_metrics = objectives_pareto[best_idx]
 
-    # Print to terminal. Only best points.
-    print("\n--- Optimization Complete ---")
-    print(f"Execution time: {res.exec_time:.2f} seconds")
-    print(f"Best Suspension Points (Coordinates):\n{best_suspension_geometry}")
-    print(f"Best Suspension Objective Values (Deltas):\n{best_suspension_metrics}")
-    print("\nThe objective values are in the following order: scrub radius, static camber, toe, kpi, mechanical trail, camber rate, toe rate.")
-    print("Units: millimeters and degrees.")
 
     # Print to file
     with open("results.txt", "a") as f:
@@ -116,9 +110,17 @@ def main():
         f.write("Best Suspension Points (Coordinates):\n")
         f.write(best_design_string)
         f.write("\n\n")
-        f.write("Best Suspension Objective Values (Deltas):\n")
+        f.write("Best Suspension Objective Values (Distance to target, not direct values):\n")
         f.write(best_objectives_string)
         f.write("\n" + "="*30 + "\n\n")
+
+    
+    # Print to terminal. Only best points.
+    print("\n--- Optimization Complete ---")
+    print(f"Execution time: {res.exec_time:.2f} seconds")
+    print(f"Best Suspension Points (Coordinates):\n{best_design_string}")
+    print(f"Best Suspension Objective Values (Deltas):\n{best_objectives_string}")
+    print("Units: millimeters and degrees.")
 
 
 if __name__ == "__main__":
