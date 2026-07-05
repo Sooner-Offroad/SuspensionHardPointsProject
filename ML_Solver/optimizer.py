@@ -16,11 +16,31 @@ from pymoo.mcdm.pseudo_weights import PseudoWeights
 
 
 def main():
+
+    # Labels for points and objectives in order. Changing this will only change the labels, you need to go into suspension.py to actually change the objectives/points
+    HARDPOINTS = [
+    "LOWER_WISHBONE_INBOARD_FRONT",
+    "LOWER_WISHBONE_INBOARD_REAR",
+    "LOWER_WISHBONE_OUTBOARD",
+    "UPPER_WISHBONE_INBOARD_FRONT",
+    "UPPER_WISHBONE_INBOARD_REAR",
+    "UPPER_WISHBONE_OUTBOARD",
+    "TRACKROD_INBOARD",
+    "TRACKROD_OUTBOARD",
+    "AXLE_INBOARD",
+    "AXLE_OUTBOARD",
+    ]
+    DESIGN_LABELS = [f"{point}_{axis}" for point in HARDPOINTS for axis in ["X", "Y", "Z"]] 
+    OBJECTIVE_LABELS = ["Static Scrub", "Camber", "Toe", "Kingpin Inclination", "Mechanical Trail", "Camber Rate", "Toe Rate"]
+
+    # Values for objectives in order. Changing this WILL affect the values of the objectives, in the order given in suspension_problem. Units mm and degrees.
+    OBJECTIVE_VALUES = [0, 0, 0, 10, 38.1, 0, 0]
+
     # Set the location to wherever your geometry yaml and sweep files are 
     geometry_yaml = r"C:\Users\adwai\Desktop\Skool\Local Git Repos\SuspensionHardPointsProject\ML_Solver\data\geometry.yaml" 
     sweep_yaml = r"C:\Users\adwai\Desktop\Skool\Local Git Repos\SuspensionHardPointsProject\ML_Solver\data\sweep.yaml"
 
-    n_procs = 20 # number of logical processors, check how many you have available before running, using cntl + shift + esc and checking cpu logical processors amount.
+    n_procs = 30 # number of logical processors, check how many you have available before running, using cntl + shift + esc and checking cpu logical processors amount.
     #run about 3-4 processors lower than what is available. You can run max but your cpu will be fully occupied. The lower the number of cores, the longer it will take.
     pool = Pool(n_procs)
     runner = StarmapParallelization(pool.starmap)
@@ -28,18 +48,21 @@ def main():
     problem = SuspensionProblem(
         geometry_path=geometry_yaml, 
         sweep_path=sweep_yaml,
+        cube_side_length_mm=30.0,
+        objective_values=OBJECTIVE_VALUES,
         elementwise_runner=runner
     )
 
-    # create the reference directions to be used for the optimization (NSGA only)
+    # create the reference directions to be used for the optimization (NSGA and its variants only)
     ref_dirs = get_reference_directions("energy", 7, 100)
     
     # create the algorithm object
     algorithm = UNSGA3(ref_dirs=ref_dirs)
     
     # increase the number here if you want it to run more generations
-    termination = get_termination("n_gen", 250)
+    termination = get_termination("n_gen", 100)
 
+    # Loop code starts here
     print("Starting optimization loop...")
     res = minimize(
         problem,
@@ -61,6 +84,7 @@ def main():
     best_suspension_geometry = points_pareto[best_idx]
     best_suspension_metrics = objectives_pareto[best_idx]
 
+    # Print to terminal. Only best points.
     print("\n--- Optimization Complete ---")
     print(f"Execution time: {res.exec_time:.2f} seconds")
     print(f"Best Suspension Points (Coordinates):\n{best_suspension_geometry}")
@@ -68,28 +92,32 @@ def main():
     print("\nThe objective values are in the following order: scrub radius, static camber, toe, kpi, mechanical trail, camber rate, toe rate.")
     print("Units: millimeters and degrees.")
 
+    # Print to file
     with open("results.txt", "a") as f:
         f.write(f"=== Entire Pareto Front ({len(points_pareto)} Configurations) ===\n")
         
-        for design in points_pareto:
-            # precision=2 matches your preferred rounding
-            # separator=', ' cleanly separates each coordinate
-            # max_line_width=np.inf prevents NumPy from wrapping text mid-array
-            formatted_string = np.array2string(
-                design, 
-                precision=2, 
-                separator=', ', 
-                max_line_width=np.inf
-            )
-            f.write(f"{formatted_string}\n")
-        
+
+        for i, design in enumerate(points_pareto):
+            # 2. Pair each label with its corresponding value and format to 2 decimal places
+            design_pairs = [f"{label}: {val:.2f}" for label, val in zip(DESIGN_LABELS, design)]
+            pareto_points_string = ", ".join(design_pairs)
+            
+            objective_pairs = [f"{label}: {val:.2f}" for label, val in zip(OBJECTIVE_LABELS, objectives_pareto[i])]
+            objectives_string = ", ".join(objective_pairs)
+            
+            # 3. Write the clearly labeled line to your file
+            f.write(f"Design [{pareto_points_string}] -> Objective Deltas (HOW FAR OFF EACH OBJECTIVE IS FROM OPTIMAL) [{objectives_string}]\n")
+
+        best_design_string = ", ".join([f"{label}: {val:.2f}" for label, val in zip(DESIGN_LABELS, best_suspension_geometry)])
+        best_objectives_string = ", ".join([f"{label}: {val:.2f}" for label, val in zip(OBJECTIVE_LABELS, best_suspension_metrics)])
+
         f.write("\n" + "="*50 + "\n\n")
         f.write("=== Optimization Run Details ===\n")
         f.write("Best Suspension Points (Coordinates):\n")
-        f.write(np.array2string(best_suspension_geometry, precision=3, separator=', '))
+        f.write(best_design_string)
         f.write("\n\n")
         f.write("Best Suspension Objective Values (Deltas):\n")
-        f.write(np.array2string(best_suspension_metrics, precision=4, separator=', '))
+        f.write(best_objectives_string)
         f.write("\n" + "="*30 + "\n\n")
 
 

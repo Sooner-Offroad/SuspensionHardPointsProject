@@ -12,7 +12,7 @@ from kinematics.core.geometry import Point3
 from kinematics.metrics import compute_metrics_for_state
 
 class SuspensionProblem(ElementwiseProblem):
-    def __init__(self, geometry_path: str, sweep_path: str, **kwargs):
+    def __init__(self, geometry_path: str, sweep_path: str, cube_side_length_mm: float, objective_values: list, **kwargs):
 
 
         #load the suspension and sweep (input) data
@@ -30,6 +30,11 @@ class SuspensionProblem(ElementwiseProblem):
         # keep count of crashes
         self.crashes = 0
 
+        # box size
+        self.cube_side_length = cube_side_length_mm
+        # objective values
+        self.objective_values = objective_values
+
         flat_initial_coords = []
         for point_id in self.optimized_points:
             point3_obj = self.suspension.hardpoints[point_id]
@@ -41,8 +46,8 @@ class SuspensionProblem(ElementwiseProblem):
         initial_hardpoints = np.array(flat_initial_coords)
         
         # 5. Define bounding boxes (permitting +/- 10mm of movement from baseline design) (Box side length is double of the value here) UNITS ARE MM
-        xl = initial_hardpoints - 10.0
-        xu = initial_hardpoints + 10.0
+        xl = initial_hardpoints - (self.cube_side_length/2)
+        xu = initial_hardpoints + (self.cube_side_length/2)
         print("Problem Succesfully Initialized!")
         super().__init__(n_var=n_var, n_obj=n_obj, n_constr=n_con, xl=xl, xu=xu, **kwargs)
     
@@ -153,20 +158,19 @@ class SuspensionProblem(ElementwiseProblem):
             print("Iteration Number:", self.count)'''
 
             # objectives, they are output in this order once the run is finished. UNITS ARE MM AND DEGREES
-            f1 = abs(static_scrub)
-            f2 = abs(static_camber)
-            f3 = abs(static_toe)
-            f4 = abs(static_kpi- 10)
-            f5 = abs(static_mech_trail - 38.1)
-            f6 = max_abs_camber_rate
-            f7 = max_abs_toe_rate
+            f1 = abs(static_scrub - self.objective_values[0])
+            f2 = abs(static_camber - self.objective_values[1])
+            f3 = abs(static_toe - self.objective_values[2])
+            f4 = abs(static_kpi- self.objective_values[3])
+            f5 = abs(static_mech_trail - self.objective_values[4])
+            f6 = abs(max_abs_camber_rate - self.objective_values[5])
+            f7 = abs(max_abs_toe_rate - self.objective_values[6]) 
 
             out["F"] = [f1, f2, f3, f4, f5, f6, f7]       
 
         except Exception as e:
             #print(f"Evaluation crashed: {type(e).__name__} - {e}")
-            self.crashes = self.crashes + 1
-            print("Solver Fail Count:", self.crashes)
+            print("Discarded invalid points.")
             # punish bad results here
             out["F"] = [1e6] * self.n_obj
 
