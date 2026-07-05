@@ -157,7 +157,7 @@ def main():
     print(f"Execution time: {res.exec_time:.2f} seconds")
     print(f"Best Suspension Points (Coordinates):\n{best_design_string}")
     print(f"Best Suspension Objective Values (Deltas):\n{best_objectives_string}")
-    print("Units: millimeters and degrees.")
+    print("Units: millimeters and degrees. Angle rates are in degrees per inch.")
 
 
 if __name__ == "__main__":
