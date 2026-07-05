@@ -17,7 +17,7 @@ def main():
 
     # Description: Hardpoint Optimizer that utilizes open kinematics and pymoo (NSGA algorithm) to optimize suspension hardpoint locations.
     #              Writes solutions to a text file, that will be saved in the current directory. Use cd followed by the folder location to 
-    #              change where the results file is saved.
+    #              change where the results file is saved. Use code at own risk.
     # CREDITS: 
     #          1. Nick McCleery for the kinematics package, https://github.com/nickmccleery/open-kinematics , under Apache License Version 2.0
     #          2. J. Blank and K. Deb, pymoo: Multi-Objective Optimization in Python, in IEEE Access, vol. 8, pp. 89497-89509, 2020, doi: 10.1109/ACCESS.2020.2990567, https://github.com/anyoptimization/pymoo
