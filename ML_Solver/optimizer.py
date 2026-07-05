@@ -131,14 +131,14 @@ def main():
         
 
         for i, design in enumerate(points_pareto):
-            # 2. Pair each label with its corresponding value and format to 2 decimal places
+            # Pair each label with its corresponding value and format to 2 decimal places
             design_pairs = [f"{label}: {val:.2f}" for label, val in zip(DESIGN_LABELS, design)]
             pareto_points_string = ", ".join(design_pairs)
             
             objective_pairs = [f"{label}: {val:.2f}" for label, val in zip(OBJECTIVE_LABELS, objectives_pareto[i])]
             objectives_string = ", ".join(objective_pairs)
             
-            # 3. Write the clearly labeled line to your file
+            # Write the clearly labeled line to your file
             f.write(f"Design [{pareto_points_string}] -> Objective Deltas (HOW FAR OFF EACH OBJECTIVE IS FROM OPTIMAL) [{objectives_string}]\n")
 
         best_design_string = ", ".join([f"{label}: {val:.2f}" for label, val in zip(DESIGN_LABELS, best_suspension_geometry)])
