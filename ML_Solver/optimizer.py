@@ -15,6 +15,11 @@ from pymoo.mcdm.pseudo_weights import PseudoWeights
 
 
 def main():
+
+    # Description: Hardpoint Optimizer that utilizes open kinematics and pymoo (NSGA algorithm) to optimize suspension hardpoint locations.
+    #              Writes solutions to a text file, that will be saved in the current directory. Use cd followed by the folder location to 
+    #              change where the results file is saved.
+
     # ===========================
     # ======== VARIABLES ========
     # ===========================
@@ -36,11 +41,13 @@ def main():
     "\nAXLE_INBOARD",
     "\nAXLE_OUTBOARD",
     ]
-
+    
     DESIGN_LABELS = [f"{point}_{axis}" for point in HARDPOINTS for axis in ["X", "Y", "Z"]] 
+
+    # Labels for objectives in order. Editing this will only change the labels, similar to above.
     OBJECTIVE_LABELS = ["Static Scrub", "Camber", "Toe", "Kingpin Inclination", "Mechanical Trail", "Camber Rate", "Toe Rate"]
 
-    # Values for objectives in order. Changing this WILL affect the values of the objectives, in the order given in suspension_problem. Units mm and degrees.
+    # Values for objectives in order. Changing this WILL affect the values of the objectives, in the order given in suspension_problem. Units mm and degrees, except camber and toe rate which are degrees/inch.
     OBJECTIVE_VALUES = [0, 0, 0, 10, 38.1, 0, 0]
 
     # Weights in same order
