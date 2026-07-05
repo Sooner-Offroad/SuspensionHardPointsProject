@@ -18,6 +18,8 @@ def main():
     # Description: Hardpoint Optimizer that utilizes open kinematics and pymoo (NSGA algorithm) to optimize suspension hardpoint locations.
     #              Writes solutions to a text file, that will be saved in the current directory. Use cd followed by the folder location to 
     #              change where the results file is saved.
+    # CREDITS: Nick McCleery for the kinematics package, https://github.com/nickmccleery/open-kinematics , under Apache License Version 2.0
+    #          J. Blank and K. Deb, pymoo: Multi-Objective Optimization in Python, in IEEE Access, vol. 8, pp. 89497-89509, 2020, doi: 10.1109/ACCESS.2020.2990567, https://github.com/anyoptimization/pymoo
 
     # ===========================
     # ======== VARIABLES ========
@@ -47,7 +49,7 @@ def main():
     OBJECTIVE_LABELS = ["Static Scrub", "Static Camber", "Static Toe", "Static Kingpin Inclination", "Static Mechanical Trail", "Max Camber Rate", "Max Toe Rate"]
 
     # Values for objectives in order. Changing this WILL affect the values of the objectives, in the order given in suspension_problem. Units mm and degrees, except camber and toe rate which are degrees/inch.
-    OBJECTIVE_VALUES = [0, 0, 0, 10, 38.1, 0, 0]
+    OBJECTIVE_VALUES = [0, 0, 0, 10, 38.1, 0.5, 0]
 
     # Weights in same order
     weights = np.array([0.22, 0.22, 0.22, 0.04, 0.04, 0.22, 0.04])
