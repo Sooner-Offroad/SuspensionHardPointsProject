@@ -5,7 +5,6 @@ from multiprocessing.pool import ThreadPool
 from multiprocessing.pool import Pool
 from pymoo.algorithms.moo.nsga3 import NSGA3
 from pymoo.algorithms.moo.unsga3 import UNSGA3
-from pymoo.algorithms.soo.nonconvex.ga import GA
 from pymoo.optimize import minimize
 from pymoo.problems import get_problem
 from pymoo.util.ref_dirs import get_reference_directions
@@ -36,6 +35,8 @@ def main():
 
     # Values for objectives in order. Changing this WILL affect the values of the objectives, in the order given in suspension_problem. Units mm and degrees.
     OBJECTIVE_VALUES = [0, 0, 0, 10, 38.1, 0, 0]
+    # Weights in same order
+    weights = np.array([0.22, 0.22, 0.22, 0.04, 0.04, 0.22, 0.04])
     # Length of side of cube in which optimizer will search for each point.
     cube_side_length_mm = 30 #mm
 
@@ -80,8 +81,6 @@ def main():
     points_pareto = res.X
     objectives_pareto = res.F
 
-    # weights, check order in suspension_problem.py
-    weights = np.array([0.22, 0.22, 0.22, 0.04, 0.04, 0.22, 0.04])
     best_idx = PseudoWeights(weights).do(objectives_pareto)
 
     best_suspension_geometry = points_pareto[best_idx]
