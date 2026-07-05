@@ -6,7 +6,6 @@ from multiprocessing.pool import Pool
 from pymoo.algorithms.moo.nsga3 import NSGA3
 from pymoo.algorithms.moo.unsga3 import UNSGA3
 from pymoo.optimize import minimize
-from pymoo.problems import get_problem
 from pymoo.util.ref_dirs import get_reference_directions
 from pymoo.termination import get_termination
 from pymoo.parallelization.starmap import StarmapParallelization
@@ -24,7 +23,7 @@ def main():
     # ======== VARIABLES ========
     # ===========================
 
-    # Set the location to wherever your geometry yaml and sweep files are. VERY IMPORTANT. CODE WILL BREAK IF YOU DO NOT UPDATE THIS.
+    # Set the location to wherever your geometry yaml and sweep files are. VERY IMPORTANT. CODE WILL BREAK IF YOU DO NOT UPDATE THIS. MAKE SURE TO HAVE AN r before the string.
     geometry_yaml = r"C:\Users\adwai\Desktop\Skool\Local Git Repos\SuspensionHardPointsProject\ML_Solver\data\geometry.yaml" 
     sweep_yaml = r"C:\Users\adwai\Desktop\Skool\Local Git Repos\SuspensionHardPointsProject\ML_Solver\data\sweep.yaml"
 
