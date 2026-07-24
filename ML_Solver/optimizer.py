@@ -32,16 +32,16 @@ def main():
 
     # Labels for points and objectives in order. Changing this will only change the labels, you need to go into suspension.py to actually change the objectives/points
     HARDPOINTS = [
-    "\nLOWER_WISHBONE_INBOARD_FRONT",
-    "\nLOWER_WISHBONE_INBOARD_REAR",
-    "\nLOWER_WISHBONE_OUTBOARD",
-    "\nUPPER_WISHBONE_INBOARD_FRONT",
-    "\nUPPER_WISHBONE_INBOARD_REAR",
-    "\nUPPER_WISHBONE_OUTBOARD",
-    "\nTRACKROD_INBOARD",
-    "\nTRACKROD_OUTBOARD",
-    "\nAXLE_INBOARD",
-    "\nAXLE_OUTBOARD",
+    "\nlower_wishbone_inboard_front",
+    "\nlower_wishbone_inboard_rear",
+    "\nlower_wishbone_outboard",
+    "\nupper_wishbone_inboard_front",
+    "\nupper_wishbone_inboard_rear",
+    "\nupper_wishbone_outboard",
+    "\ntrackrod_inboard",
+    "\ntrackrod_outboard",
+    "\naxle_inboard",
+    "\naxle_outboard",
     ]
     
     DESIGN_LABELS = [f"{point}_{axis}" for point in HARDPOINTS for axis in ["X", "Y", "Z"]] 
@@ -53,7 +53,13 @@ def main():
     OBJECTIVE_VALUES = [0, 0, 0, 10, 38.1, 0.5, 0]
 
     # Weights in same order
-    weights = np.array([0.22, 0.22, 0.22, 0.04, 0.04, 0.22, 0.04])
+    weights = np.array([0.20, 0.05, 0.125, 0.10, 0.05, 0.125, 0.35])
+
+    # Number of objectives
+    n_obj = len(OBJECTIVE_VALUES)
+
+    # Number of constraints
+    n_con = 0
 
     # Length of side of cube in which optimizer will search for each point.
     cube_side_length_mm = 30 #mm
@@ -90,6 +96,8 @@ def main():
         sweep_path=sweep_yaml,
         cube_side_length_mm=cube_side_length_mm,
         objective_values=OBJECTIVE_VALUES,
+        n_obj=n_obj,
+        n_con=n_con,
         elementwise_runner=runner
     )
     

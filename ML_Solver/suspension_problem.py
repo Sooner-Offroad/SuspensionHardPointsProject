@@ -14,7 +14,7 @@ from kinematics.metrics import compute_metrics_for_state
 
 
 class SuspensionProblem(ElementwiseProblem):
-    def __init__(self, geometry_path: str, sweep_path: str, cube_side_length_mm: float, objective_values: list, **kwargs):
+    def __init__(self, geometry_path: str, sweep_path: str, cube_side_length_mm: float, objective_values: list, n_obj: int, n_con: int, **kwargs):
 
 
         # Load the suspension and sweep (input) data
@@ -28,10 +28,10 @@ class SuspensionProblem(ElementwiseProblem):
         n_var = len(self.optimized_points) * 3
         
         # number of objectives (for example camber change, caster change, etc.)
-        n_obj = 7
+        n_obj = n_obj
 
         # number of constraints, these are objectives the solver MUST achieve exactly. 
-        n_con = 0
+        n_con = n_con
 
         # Set the box size.
         self.cube_side_length = cube_side_length_mm
